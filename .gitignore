@@ -1,4 +1,7 @@
 node_modules/
 bower_components/
+<<<<<<< HEAD
 *~
+=======
+>>>>>>> 81ad63f1792589443277f1d09802dbc5fa3cd990
 *.*~
