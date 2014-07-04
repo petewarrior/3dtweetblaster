@@ -16,7 +16,7 @@
     "less-middleware": "1.0.x",
     "bower": "latest",
     "socket.io": "latest",
-    "twitter": "latest",
+    "twit": "latest",
     "prettyjson": "latest",
     "http": "latest"
   },
