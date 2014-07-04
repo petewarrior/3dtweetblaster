@@ -15,6 +15,12 @@
     "ejs": "~0.8.5",
     "less-middleware": "1.0.x",
     "bower": "latest",
-    "socket.io": "latest"
+    "socket.io": "latest",
+    "twitter": "latest",
+    "prettyjson": "latest",
+    "http": "latest"
+  },
+  "devDependencies": {
+    
   }
 }
