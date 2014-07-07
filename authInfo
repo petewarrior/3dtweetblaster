@@ -1,0 +1,8 @@
+ var auth = {
+ consumer_key: 'JGE762wVxSFF0zIDy22eDAOID',
+ consumer_secret: 'Ydo2Qlb7wevPz1azE1w9LZmKUYGAFsIIp4sxqtqdEj1Kmd77W3',
+ access_token: '21967366-gaOXCBmsI8kkafxKTie4MNQJXrvkw55wTIUeDiBCZ',
+ access_token_secret: 'RxcJljOkV36qPuiPIKJDvJrcsC1RLDivi8NHFLFOTvCFp'
+ };
+
+ module.exports = auth;
