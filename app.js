@@ -5,7 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var routes = require('./routes/index');
+//var routes = require('./routes/index');
 var users = require('./routes/users');
 
 var app = express();
@@ -14,6 +14,18 @@ var router = express.Router();
 
 var io = require('socket.io')(server);
 var Twit = require('twit');
+
+/* authInfo content:
+ var auth = {
+ consumer_key: '',
+ consumer_secret: '',
+ access_token: '',
+ access_token_secret: ''
+ };
+
+ module.exports = auth;
+ */
+var authInfo = require('./authInfo');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -28,47 +40,42 @@ app.use(require('less-middleware')(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // prepare Twitter stream
-  var twit = new Twit({
-    consumer_key: 'I2xvqxAPrQFLY2YI3zG4g',
-    consumer_secret: 'HlVw1XFTsvcmDwcEPk5u5B9aBN0Dvfu3X3nIBySaqY',
-    access_token: '21967366-hLGfSmqHjChj0ZMsBPdI8j2TbBNBisJeDEawTQttd',
-    access_token_secret: 'v8sIEHW07OrUK6mHBDLatBxNLr3tx0kgBahXsHV4'
-  });
+var twit = new Twit(authInfo);
 
-var stream;
+var stream = null;
+
+io.on('connection', function(socket) {
+    console.log(socket);
+    socket.emit("welcome", {
+        "message" : "Welcome!"
+    });
+});
 
 router.get('/:keywords', function(req, res) {
-  var keywords = req.param('keywords');
-  console.log(keywords);
-  res.render('index', {
-    title: '3D Tweet Blaster'
-  });
-  
-  stream.stop();
 
-  io.on('connection', function (socket) {
-    socket.on('send', function (data) {
-      console.log(data);
-      io.sockets.emit('message', data);
+    var keywords = req.param('keywords');
+    res.render('index', {
+        title : '3D Tweet Blaster'
     });
-  });
 
-  stream = twit.stream('statuses/filter', {
-    track: keywords
-  });
-  
-    stream.on('tweet', function (data) {
-
-        console.log(data);
+    if(stream)
+        stream.stop();
         
-        //io.sockets.emit('message', data);
+    stream = twit.stream('statuses/filter', {
+        track : keywords
+    });
+
+    console.log("start tracking");
+    stream.on('tweet', function(data) {
+
+        console.log("tweet received");
+        io.sockets.emit('new tweet', data);
 
         //var parsed = JSON.parse(data);
 
         //for (t in parsed) {
         //   console.log(t.user.screen_name + ": " + t.text);
         // }
-      
 
     });
 
@@ -77,34 +84,35 @@ router.get('/:keywords', function(req, res) {
 app.use('/', router);
 
 /// catch 404 and forward to error handler
-  app.use(function(req, res, next) {
+app.use(function(req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;
     next(err);
-  });
+});
 
 /// error handlers
 
 // development error handler
 // will print stacktrace
-  if (1) {//app.get('env') === 'development') {
+if (1) {//app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
-      res.status(err.status || 500);
-      res.render('error', {
-        message : err.message,
-        error : err
-      });
+        res.status(err.status || 500);
+        res.render('error', {
+            message : err.message,
+            error : err
+        });
     });
-  }
+}
 
 // production error handler
 // no stacktraces leaked to user
-  app.use(function(err, req, res, next) {
+app.use(function(err, req, res, next) {
     res.status(err.status || 500);
+    console.log(err.message);
     res.render('error', {
-      message : err.message,
-      error : {}
+        message : err.message,
+        error : {}
     });
-  });
+});
 
-  module.exports = app;
+module.exports = server;
