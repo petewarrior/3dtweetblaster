@@ -51,17 +51,18 @@ io.on('connection', function(socket) {
     });
 });
 
-
 router.get('/canvas/:keywords', function(req, res) {
 
     var keywords = req.param('keywords');
     res.render('canvas', {
-        title : '3D Tweet Blaster - Canvas'
+        title : '3D Tweet Blaster - Canvas',
+        //port : process.env.PORT || 3000,
+        host: req.headers.host
     });
 
-    if(stream)
+    if (stream)
         stream.stop();
-        
+
     stream = twit.stream('statuses/filter', {
         track : keywords
     });
@@ -89,9 +90,9 @@ router.get('/keywords', function(req, res) {
         title : '3D Tweet Blaster'
     });
 
-    if(stream)
+    if (stream)
         stream.stop();
-        
+
     stream = twit.stream('statuses/filter', {
         track : keywords
     });
@@ -114,12 +115,20 @@ router.get('/keywords', function(req, res) {
 
 app.use('/', router);
 
-/// catch 404 and forward to error handler
 app.use(function(req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', "http://" + req.headers.host + ':' + process.env.PORT || 3000);
+
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    next();
+});
+
+/// catch 404 and forward to error handler
+/*app.use(function(req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;
     next(err);
-});
+});*/
 
 /// error handlers
 

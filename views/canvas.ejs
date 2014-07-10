@@ -268,7 +268,7 @@
 
             }
 
-            var socket = io.connect('http://tweet3d.heroku.com:80');
+            var socket = io.connect('http://<%= host %>');
             socket.on('new tweet', function(data) {
                 //console.log(data);
                 //socket.emit('my other event', { my: 'data' });
