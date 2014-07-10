@@ -19,7 +19,7 @@
     "socket.io": "latest",
     "twit": "latest",
     "prettyjson": "latest",
-    "http": "latest"
+    "logfmt": "latest"
   },
   "devDependencies": {
     
