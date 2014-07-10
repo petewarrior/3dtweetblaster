@@ -51,7 +51,38 @@ io.on('connection', function(socket) {
     });
 });
 
-router.get('/:keywords', function(req, res) {
+
+router.get('/canvas/:keywords', function(req, res) {
+
+    var keywords = req.param('keywords');
+    res.render('canvas', {
+        title : '3D Tweet Blaster - Canvas'
+    });
+
+    if(stream)
+        stream.stop();
+        
+    stream = twit.stream('statuses/filter', {
+        track : keywords
+    });
+
+    console.log("start tracking");
+    stream.on('tweet', function(data) {
+
+        console.log("tweet received");
+        io.sockets.emit('new tweet', data);
+
+        //var parsed = JSON.parse(data);
+
+        //for (t in parsed) {
+        //   console.log(t.user.screen_name + ": " + t.text);
+        // }
+
+    });
+
+});
+
+router.get('/keywords', function(req, res) {
 
     var keywords = req.param('keywords');
     res.render('index', {
