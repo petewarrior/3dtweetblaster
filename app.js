@@ -42,12 +42,26 @@ app.use(express.static(path.join(__dirname, 'public')));
 // prepare Twitter stream
 var twit = new Twit(authInfo);
 
+var wordlist = [];
+
 var stream = null;
 
 io.on('connection', function(socket) {
-    console.log(socket);
+    //console.log(socket);
+    socket.lastTweet = 0;
     socket.emit("welcome", {
         "message" : "Welcome!"
+    });
+
+    socket.on("request new tweet", function(data) {
+        console.log('last tweet ' + socket.lastTweet);
+        if (wordlist.length > socket.lastTweet) {
+            socket.emit('new tweet', wordlist[socket.lastTweet]);
+            console.log('sent tweet #' + socket.lastTweet + ' to client ' + socket.id);
+            socket.lastTweet++;
+        } else {
+            socket.emit('no tweet yet', {});
+        }
     });
 });
 
@@ -57,7 +71,7 @@ router.get('/canvas/:keywords', function(req, res) {
     res.render('canvas', {
         title : '3D Tweet Blaster - Canvas',
         //port : process.env.PORT || 3000,
-        host: req.headers.host
+        host : req.headers.host
     });
 
     if (stream)
@@ -70,8 +84,12 @@ router.get('/canvas/:keywords', function(req, res) {
     console.log("start tracking");
     stream.on('tweet', function(data) {
 
-        console.log("tweet received");
-        io.sockets.emit('new tweet', data);
+        if (wordlist.length < 1000)
+            wordlist[wordlist.length] = data;
+
+        console.log("tweets in buffer: " + wordlist.length
+        );
+        //io.sockets.emit('new tweet', data);
 
         //var parsed = JSON.parse(data);
 
@@ -101,8 +119,9 @@ router.get('/keywords', function(req, res) {
     stream.on('tweet', function(data) {
 
         console.log("tweet received");
-        io.sockets.emit('new tweet', data);
-
+        //io.sockets.emit('new tweet', data);
+        if (wordlist.length < 1000)
+            wordlist[wordlist.length] = data;
         //var parsed = JSON.parse(data);
 
         //for (t in parsed) {
@@ -126,9 +145,9 @@ app.use(function(req, res, next) {
 
 /// catch 404 and forward to error handler
 /*app.use(function(req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
+var err = new Error('Not Found');
+err.status = 404;
+next(err);
 });*/
 
 /// error handlers
