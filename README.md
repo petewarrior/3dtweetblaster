@@ -18,4 +18,4 @@ var auth = {
 ```
 5. Run the app: `npm start`
 6. You can now try it out with a keyword of your choice on your browser: 
-    http://localhost:3000/canvas/<your keyword here>
+`http://localhost:3000/canvas/<your keyword here>`
