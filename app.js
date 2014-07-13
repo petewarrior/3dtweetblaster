@@ -132,6 +132,13 @@ router.get('/keywords', function(req, res) {
 
 });
 
+router.get('/', function(req, res) {
+
+    res.render('welcome', {
+        title : '3D Tweet Blaster'
+    });
+});
+
 app.use('/', router);
 
 app.use(function(req, res, next) {
