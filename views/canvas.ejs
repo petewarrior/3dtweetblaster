@@ -161,7 +161,7 @@
 
                 text.position.x = centerOffset + (Math.random() * 600 - 300);
                 text.position.y = Math.random() * 100 - 50;
-                text.position.z = 0;
+                text.position.z = Math.random() * 100 - 50;
 
                 text.rotation.x = 0;
                 text.rotation.y = Math.PI * 2;
@@ -274,9 +274,19 @@
                 //socket.emit('my other event', { my: 'data' });
                 text = data.text;
                 addNewText(text);
+                setTimeout(function() {
+            		socket.emit('request new tweet');
+            	}, 5000);
             });
             socket.on('welcome', function(data) {
                 console.log(data);
+                socket.emit('request new tweet');
+            });
+            socket.on('no tweet yet', function() {
+            	setTimeout(function() {
+            		console.log("retry request");
+            		socket.emit('request new tweet');
+            	}, 5000);
             });
 
 		</script>
